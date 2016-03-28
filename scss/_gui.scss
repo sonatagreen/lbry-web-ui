@@ -25,6 +25,10 @@ sup, sub {
 sup { top: -0.4em; }
 sub { top: 0.4em; }
 
+.hidden {
+  display: none !important;
+}
+
 .fade-in-link {
   opacity: 0.55;
   transition: opacity .225s ease;
@@ -102,4 +106,9 @@ input[type="search"]
 {
   color: $color-primary;
   text-decoration: underline;
+}
+
+.modal
+{
+  background-color: $color-primary;
 }

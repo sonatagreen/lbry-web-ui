@@ -17,7 +17,7 @@ var Link = React.createClass({
         className = (this.props.button ? 'button-block button-' + this.props.button : 'button-text') +
                     (this.props.fadeIn ? ' fade-in-link' : '');
     return (
-      <a className={className} href={href} style={this.props.style ? this.props.style : {}}>
+      <a className={className} href={href} style={this.props.style ? this.props.style : {}} onClick={this.props.onClick}>
         {this.props.icon ? icon : '' }
         {this.props.label}
       </a>
@@ -25,6 +25,90 @@ var Link = React.createClass({
   }
 });
 
+var modalBackdropStyle = {
+  height: '100vh',
+  width: '100vw',
+  position: 'absolute',
+  top: '0px',
+  left: '0px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: 'rgba(255, 255, 255, 0.8)',
+}, modalStyle = {
+  position: 'relative',
+  height: '350px',
+  width: '650px',
+  textAlign: 'center',
+  flexDirection: 'column',
+  color: 'white',
+  backgroundImage: 'url(' + lbry.imagePath('lbry-bg.png') + ')',
+}, modalCloseStyle = {
+  position: 'absolute',
+  top: '2px',
+  right: '5px',
+  color: 'white'
+}, modalContentStyle = {
+  margin: 'auto',
+  marginTop: '10px',
+  width: '75%',
+  textAlign: 'initial',
+  fontSize: '15px'
+};
+
+var Modal = React.createClass({
+  getInitialState: function() {
+    return {
+      isOpen: true
+    };
+  },
+  open: function() {
+    this.setState({isOpen: true});
+  },
+  close: function() {
+    this.setState({isOpen: false});
+  },
+
+  render: function() {
+    var self = this;
+    return (
+       <div className={'modal-backdrop ' + (this.state.isOpen ? '' : 'hidden')} style={modalBackdropStyle}>
+         <div className="modal" style={modalStyle}>
+           <Link icon="icon-close" style={modalCloseStyle} onClick={this.close} />
+           <h3 style={{marginTop: '4px'}}>{this.props.title}</h3>
+           <div className="modal-content" style={modalContentStyle}>
+             {this.props.children}
+           </div>
+         </div>
+       </div>
+    );
+  }
+});
+
+var settingStyle = {
+  marginBottom: '10px'
+};
+
+var SettingsModal = React.createClass({
+  render: function() {
+    return (<Modal title="Settings">
+      <p style={settingStyle}>
+      <input type="checkbox">Run on startup</input>
+      </p>
+      <p style={settingStyle}>
+      Default download directory: <input type="file" directory webkitdirectory />
+      </p>
+      <p style={settingStyle}>
+      Rate limit (choose 0 for no limit):
+      <input type="number" min="0.0" step=".5" style={{width: '40px'}} /> MB/s
+      </p>
+      <p style={settingStyle}>
+      Default payment rules: <br />
+      ...
+      </p>
+    </Modal>);
+  }
+});
 
 //component/splash.js
 var splashStyle = {
@@ -124,6 +208,7 @@ var TopBar = React.createClass({
       balance: 0
     };
   },
+
   componentDidMount: function() {
     lbry.getBalance(function(balance) {
       this.setState({
@@ -349,6 +434,7 @@ var Discover = React.createClass({
   }
 });
 
+
 //component/home.js
 
 var homeStyles = {
@@ -358,11 +444,18 @@ var homeStyles = {
 };
 
 var Home = React.createClass({
+  getInitialState: function() {
+    return {
+      settingsIsOpen: true
+    }
+  },
+
   render: function() {
     return (
       <div style={homeStyles}>
         <Header />
         <Discover />
+        <SettingsModal/ > 
       </div>
     );
   }
@@ -378,7 +471,10 @@ var init = function() {
   );
 
   lbry.connect(function() {
-    ReactDOM.render(<Home/>, canvas);
+    ReactDOM.render(
+      <Home/>, 
+      canvas
+    );
   })
 };
 
