@@ -37,7 +37,7 @@ var SearchResults = React.createClass({
   render: function() {
     var rows = [];
     this.props.results.forEach(function(result) {
-      if (!result.value.nsfw) {
+      if (!result.value.nsfw || lbry.setSettings(settings)['show_nsfw']) {
         rows.push(
           <SearchResultRow key={result.name} name={result.name} title={result.value.title} imgUrl={result.value.thumbnail}
                            description={result.value.description} cost={result.cost} />
@@ -136,7 +136,7 @@ var FeaturedContentItem = React.createClass({
   },
 
   render: function() {
-    if (this.state.metadata == null || this.state.metadata.nsfw) {
+    if (this.state.metadata == null || (this.state.metadata.nsfw && !(lbry.setSettings(settings)['show_nsfw']))) {
       // Still waiting for metadata, or item is NSFW
       return null;
     }
