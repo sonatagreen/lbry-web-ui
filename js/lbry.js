@@ -7,6 +7,7 @@ var lbry = {
   },
   defaultClientSettings: {
     showNsfw: false,
+    walletPageAddress: "",
   }
 };
 

@@ -4,12 +4,28 @@ var NewAddressSection = React.createClass({
       this.setState({
         address: results,
       })
+      lbry.setClientSetting("walletPageAddress", results)
     });
   },
   getInitialState: function() {
     return {
       address: "",
     }
+  },
+  componentWillMount: function() {
+    if (lbry.getClientSetting("walletPageAddress")=="") {
+      this.generateAddress();
+    }
+    lbry.call('get_transaction_history', {}, (results) => {
+      var oldAddr = lbry.getClientSetting("walletPageAddress");
+      if (results.indexOf(oldAddr) >= 0) {
+        this.generateAddress();
+      } else {
+        this.setState({
+          address: oldAddr,
+        });
+      }
+    });
   },
   render: function() {
     return (
